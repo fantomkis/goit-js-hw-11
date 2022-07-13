@@ -71,7 +71,7 @@ function btnMore(event) {
     totalPages = Math.ceil(data.totalHits / perPage);
     console.log(totalPages);
     if (page === totalPages) {
-      refs.loadBtn.classList.add('is-hiden ');
+      refs.loadBtn.classList.add('is-hiden');
     }
   });
 }
