@@ -18,60 +18,83 @@ let simpleLightBox;
 let totalPages;
 refs.searchForm.addEventListener('submit', onSearch);
 
-function onSearch(event) {
+async function onSearch(event) {
   event.preventDefault();
   page = 1;
   query = event.currentTarget.searchQuery.value.trim();
   refs.gallery.innerHTML = '';
+
   if (query === '') {
-    Notify.failure('Erorr, input is empty.');
+    errorNotifi('Erorr, input is empty.');
+    refs.loadBtn.classList.add('is-hiden');
     return;
   }
-  fachImg(page, perPage, query)
-    .then(({ data }) => {
-      if (data.totalHits === 0) {
-        Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-      }
-      refs.gallery.innerHTML = galleryList(data.hits);
 
-      Notify.info(`Hooray! We found ${data.totalHits} images.`);
+  try {
+    const data = await fachImg(page, perPage, query);
+    if (data.totalHits === 0) {
+      refs.loadBtn.classList.add('is-hiden');
+      errorNotifi(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    }
 
-      simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    refs.gallery.innerHTML = galleryList(data.hits);
 
-      const { height: cardHeight } = document
-        .querySelector('.gallery')
-        .firstElementChild.getBoundingClientRect();
+    alertNetifyInfo(`Hooray! We found ${data.totalHits} images.`);
 
-      window.scrollBy({
-        top: cardHeight * 2,
-        behavior: 'smooth',
-      });
-      refs.loadBtn.classList.remove('is-hiden');
-    })
-    .catch(error => console.log(error))
-    .finally(() => {
-      refs.searchForm.reset();
-    });
+    simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    slovmo();
 
-  return;
+    refs.loadBtn.classList.remove('is-hiden');
+
+    refs.searchForm.reset();
+  } catch (error) {
+    errorNotifi(error);
+  }
 }
 
 // Кнопка
 refs.loadBtn.addEventListener('click', btnMore);
 
-function btnMore(event) {
+async function btnMore(event) {
   page += 1;
-  console.log(page);
+  try {
+    const data = await fachImg(page, perPage, query);
 
-  fachImg(page, perPage, query).then(({ data }) => {
     refs.gallery.insertAdjacentHTML('beforeend', galleryList(data.hits));
+
+    slovmo();
+
     simpleLightBox = new SimpleLightbox('.gallery a').refresh();
     totalPages = Math.ceil(data.totalHits / perPage);
-    console.log(totalPages);
+
     if (page === totalPages) {
       refs.loadBtn.classList.add('is-hiden');
+
+      alertNetifyInfo(
+        "We're sorry, but you've reached the end of search results."
+      );
     }
+  } catch (error) {
+    errorNotifi(error);
+  }
+}
+
+function slovmo() {
+  const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
   });
+}
+
+function alertNetifyInfo(maseeg) {
+  Notify.info(maseeg);
+}
+function errorNotifi(maseeg) {
+  Notify.failure(maseeg);
 }
