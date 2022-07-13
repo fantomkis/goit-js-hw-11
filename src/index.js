@@ -10,12 +10,12 @@ const refs = {
   gallery: document.querySelector('.gallery'),
   loadBtn: document.querySelector('.load-more'),
 };
-
+console.log(SimpleLightbox);
 let page = 1;
 let perPage = 40;
 let query = '';
 let simpleLightBox;
-let totalHits = 0;
+let totalPages;
 refs.searchForm.addEventListener('submit', onSearch);
 
 function onSearch(event) {
@@ -68,8 +68,9 @@ function btnMore(event) {
   fachImg(page, perPage, query).then(({ data }) => {
     refs.gallery.insertAdjacentHTML('beforeend', galleryList(data.hits));
     simpleLightBox = new SimpleLightbox('.gallery a').refresh();
-    totalHits = Math.ceil(data.totalHits / perPage);
-    if (page === totalHits) {
+    totalPages = Math.ceil(data.totalHits / perPage);
+    console.log(totalPages);
+    if (page === totalPages) {
       refs.loadBtn.classList.add('is-hiden ');
     }
   });

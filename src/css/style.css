@@ -70,7 +70,12 @@ img {
 .info-item {
   display: flex;
   flex-direction: column;
+  color: black;
 }
 .is-hiden {
   display: none;
+}
+
+a {
+  text-decoration: none;
 }
