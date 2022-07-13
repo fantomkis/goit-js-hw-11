@@ -1,9 +1,9 @@
 
  
 {{#each this}}
- <a class="img__link" href="{{largeImageURL}}" ></a>
+
 <div class="photo-card">
-   
+    <a class="img__link" href="{{largeImageURL}}" ></a>
   <img src="{{largeImageURL}}" alt="{{tags}}" loading="lazy"  />
   <div class="info">
     <p class="info-item">
@@ -19,9 +19,9 @@
       <b>Downloads:</b>{{downloads}}
     </p>
   </div>
-  
+  </a>
 </div>
-</a>
+
 {{/each}}
 
 {{!-- webformatURL - ссылка на маленькое изображение для списка карточек.

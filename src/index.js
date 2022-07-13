@@ -10,10 +10,12 @@ const refs = {
   gallery: document.querySelector('.gallery'),
   loadBtn: document.querySelector('.load-more'),
 };
+
 let page = 1;
 let perPage = 40;
 let query = '';
 let simpleLightBox;
+let totalHits = 0;
 refs.searchForm.addEventListener('submit', onSearch);
 
 function onSearch(event) {
@@ -33,7 +35,11 @@ function onSearch(event) {
         );
       }
       refs.gallery.innerHTML = galleryList(data.hits);
+
+      Notify.info(`Hooray! We found ${data.totalHits} images.`);
+
       simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+
       const { height: cardHeight } = document
         .querySelector('.gallery')
         .firstElementChild.getBoundingClientRect();
@@ -42,6 +48,7 @@ function onSearch(event) {
         top: cardHeight * 2,
         behavior: 'smooth',
       });
+      refs.loadBtn.classList.remove('is-hiden');
     })
     .catch(error => console.log(error))
     .finally(() => {
@@ -61,5 +68,9 @@ function btnMore(event) {
   fachImg(page, perPage, query).then(({ data }) => {
     refs.gallery.insertAdjacentHTML('beforeend', galleryList(data.hits));
     simpleLightBox = new SimpleLightbox('.gallery a').refresh();
+    totalHits = Math.ceil(data.totalHits / perPage);
+    if (page === totalHits) {
+      refs.loadBtn.classList.add('is-hiden ');
+    }
   });
 }
